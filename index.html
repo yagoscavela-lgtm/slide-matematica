@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Desafio de Matemática 2º Ano</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: uma tela por questão, cartão central grande com 4 botões em grade 2x2 (1 coluna no celular) */
+:root{
+  --bg:#FFF8E7;
+  --ink:#2B2D5B;
+  --blue:#3D8BFD;
+  --orange:#FF9F1C;
+  --purple:#8E6CEF;
+  --teal:#1FB5AD;
+  --good:#22B573;
+  --bad:#EF4B4B;
+  --card:#FFFFFF;
+  --font:"Fredoka","Trebuchet MS","Comic Sans MS",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{
+  background:var(--bg);
+  background-image:radial-gradient(circle at 12% 18%,#FFE9A8 0 60px,transparent 61px),
+                   radial-gradient(circle at 92% 82%,#C9E3FF 0 90px,transparent 91px),
+                   radial-gradient(circle at 88% 10%,#E5DAFF 0 50px,transparent 51px);
+  font-family:var(--font);color:var(--ink);
+  overflow-x:hidden;
+}
+button{font-family:inherit}
+.app{max-width:960px;margin:0 auto;padding:16px;min-height:100%;display:flex;flex-direction:column;gap:14px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.brand{font-weight:700;font-size:clamp(18px,3.4vw,26px);flex:1;min-width:200px}
+.mute{border:3px solid var(--ink);background:#fff;border-radius:14px;padding:6px 12px;font-size:20px;cursor:pointer}
+.mute:focus-visible,.opt:focus-visible,.next:focus-visible,.start:focus-visible{outline:4px solid var(--ink);outline-offset:3px}
+.progress{background:#fff;border:3px solid var(--ink);border-radius:20px;padding:10px 16px;display:flex;flex-direction:column;gap:8px}
+.progress .label{font-weight:700;font-size:clamp(16px,3vw,22px);display:flex;justify-content:space-between}
+.track{height:18px;border-radius:12px;background:#E8E6F7;overflow:hidden}
+.fill{height:100%;width:0;background:linear-gradient(90deg,var(--orange),var(--good));border-radius:12px;transition:width .6s ease}
+.stars{display:flex;gap:6px;font-size:24px;filter:grayscale(1);}
+.stars span.on{filter:none;animation:pop .5s}
+.stage{flex:1;display:flex;flex-direction:column;gap:14px}
+.card{background:var(--card);border:3px solid var(--ink);border-radius:28px;padding:clamp(16px,3vw,28px);box-shadow:0 8px 0 var(--ink);position:relative}
+.tag{display:inline-block;background:var(--purple);color:#fff;font-weight:700;border-radius:999px;padding:4px 16px;font-size:clamp(14px,2.6vw,18px);margin-bottom:10px}
+.question{font-size:clamp(22px,4.6vw,34px);font-weight:600;line-height:1.25;margin:0 0 12px;text-wrap:balance}
+.score{background:#FFE9A8;border:3px solid var(--ink);border-radius:999px;padding:2px 14px;font-size:clamp(16px,3vw,22px)}
+.cap{font-size:clamp(14px,2.6vw,18px);font-weight:500;margin-top:6px}
+.tbl{border-collapse:collapse;font-size:clamp(18px,3.8vw,28px);font-weight:600;min-width:min(100%,420px)}
+.tbl th{background:var(--purple);color:#fff;padding:8px 16px;border:3px solid var(--ink)}
+.tbl td{padding:8px 16px;border:3px solid var(--ink);background:#FFF8E7}
+.tbl td:last-child,.tbl th:last-child{text-align:center}
+.cols{width:100%;max-width:520px;height:auto}
+.note{display:inline-block;border:3px solid var(--ink);border-radius:12px;padding:10px 16px;font-size:clamp(20px,4.4vw,32px);font-weight:700;color:var(--ink)}
+.box{border:3px dashed var(--ink);border-radius:16px;padding:8px 12px;font-size:clamp(24px,5vw,38px);background:#FFF1C9}
+.pens{width:100%;display:grid;gap:12px}
+.pen{height:26px;border:3px solid var(--ink);border-radius:6px 14px 14px 6px}
+.mascot{position:absolute;right:14px;top:-34px;width:84px;height:84px}
+.visual{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:10px;margin:8px 0 4px;min-height:80px}
+.bignum{font-size:clamp(40px,10vw,76px);font-weight:700;line-height:1}
+.chip{background:#FFE9A8;border:3px solid var(--ink);border-radius:18px;padding:6px 16px;font-size:clamp(34px,8vw,60px);font-weight:700}
+.chip.blank{background:#fff;border-style:dashed;min-width:1.6em;text-align:center;color:var(--purple)}
+.arrow{font-size:clamp(22px,5vw,36px);font-weight:700}
+.eq{color:var(--blue)}
+.chart{width:100%;display:grid;gap:10px}
+.bar{display:grid;grid-template-columns:minmax(90px,150px) 1fr;align-items:center;gap:10px;font-size:clamp(18px,3.6vw,26px);font-weight:600}
+.bar .b{height:42px;border-radius:12px;border:3px solid var(--ink);display:flex;align-items:center;justify-content:flex-end;padding-right:12px;color:#fff;font-weight:700}
+.options{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:620px){.options{grid-template-columns:1fr}.mascot{width:64px;height:64px;top:-28px}}
+.opt{
+  display:flex;align-items:center;gap:14px;text-align:left;cursor:pointer;
+  border:4px solid var(--ink);border-radius:24px;padding:16px 18px;min-height:92px;
+  font-size:clamp(24px,5vw,38px);font-weight:700;color:#fff;
+  box-shadow:0 6px 0 var(--ink);transition:transform .12s,box-shadow .12s,opacity .2s;
+}
+.opt:hover:not(:disabled){transform:translateY(-3px);box-shadow:0 9px 0 var(--ink)}
+.opt:active:not(:disabled){transform:translateY(4px);box-shadow:0 2px 0 var(--ink)}
+.opt .letter{flex:none;width:52px;height:52px;border-radius:50%;background:#fff;color:var(--ink);display:grid;place-items:center;font-size:30px;border:3px solid var(--ink)}
+.opt .txt{flex:1;line-height:1.1}
+.opt svg.ico{flex:none;width:54px;height:54px;background:#fff;border-radius:14px;border:3px solid var(--ink);padding:5px}
+.c0{background:var(--blue)}.c1{background:var(--orange);color:var(--ink)}.c2{background:var(--purple)}.c3{background:var(--teal)}
+.opt.wrong{background:var(--bad);color:#fff;animation:shake .45s;opacity:.85}
+.opt.right{background:var(--good);color:#fff;animation:pop .6s}
+.opt:disabled{cursor:default}
+.opt.dim{opacity:.45}
+.feedback{min-height:64px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:clamp(22px,4.6vw,34px);font-weight:700;gap:12px;flex-wrap:wrap}
+.feedback.good{color:var(--good)}.feedback.bad{color:var(--bad)}
+.next{display:none;border:4px solid var(--ink);background:var(--good);color:#fff;font-weight:700;font-size:clamp(22px,4.6vw,32px);border-radius:999px;padding:14px 34px;cursor:pointer;box-shadow:0 6px 0 var(--ink);animation:pop .5s}
+.next.show{display:inline-block}
+.next:hover{transform:translateY(-3px)}
+.actions{display:flex;justify-content:center}
+/* Marca grande de X / check */
+.mark{position:fixed;inset:0;display:grid;place-items:center;pointer-events:none;z-index:50;opacity:0}
+.mark svg{width:min(60vw,320px);height:auto;filter:drop-shadow(0 8px 0 rgba(43,45,91,.35))}
+.mark.show{animation:markin 1.2s ease forwards}
+#confetti{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:60}
+/* Tela final */
+.final{text-align:center;display:none;flex-direction:column;align-items:center;gap:14px;padding:10px 0}
+.final h1{font-size:clamp(28px,6vw,48px);margin:0;text-wrap:balance}
+.final p{font-size:clamp(20px,4vw,28px);margin:0;font-weight:500}
+.trophy{width:min(52vw,220px);animation:float 2s ease-in-out infinite}
+.start{border:4px solid var(--ink);background:var(--orange);color:var(--ink);font-weight:700;font-size:clamp(22px,4.6vw,30px);border-radius:999px;padding:14px 34px;cursor:pointer;box-shadow:0 6px 0 var(--ink)}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-10px)}40%{transform:translateX(10px)}60%{transform:translateX(-8px)}80%{transform:translateX(8px)}}
+@keyframes pop{0%{transform:scale(.6)}60%{transform:scale(1.12)}100%{transform:scale(1)}}
+@keyframes markin{0%{opacity:0;transform:scale(.3)}20%{opacity:1;transform:scale(1.1)}35%{transform:scale(1)}80%{opacity:1}100%{opacity:0;transform:scale(1)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<canvas id="confetti" aria-hidden="true"></canvas>
+<div class="mark" id="markOk" aria-hidden="true">
+  <svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="56" fill="#22B573" stroke="#2B2D5B" stroke-width="5"/><path d="M32 62 L52 82 L90 38" fill="none" stroke="#fff" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</div>
+<div class="mark" id="markBad" aria-hidden="true">
+  <svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="56" fill="#EF4B4B" stroke="#2B2D5B" stroke-width="5"/><path d="M38 38 L82 82 M82 38 L38 82" fill="none" stroke="#fff" stroke-width="14" stroke-linecap="round"/></svg>
+</div>
+
+<div class="app">
+  <header>
+    <div class="brand">🎯 DESAFIO DE MATEMÁTICA – 2º ANO</div>
+    <button class="mute" id="mute" type="button" aria-label="Ligar ou desligar o som" title="Som">🔊</button>
+  </header>
+
+  <div class="progress" id="progress">
+    <div class="label"><span id="plabel">Questão 1 de 5</span><span class="score" id="score">⭐ 0</span></div>
+    <div class="track"><div class="fill" id="fill"></div></div>
+  </div>
+
+  <main class="stage" id="stage">
+    <section class="card" id="qcard" aria-live="polite">
+      <svg class="mascot" viewBox="0 0 100 100" aria-hidden="true">
+        <!-- lápis mascote -->
+        <g stroke="#2B2D5B" stroke-width="4" stroke-linejoin="round">
+          <rect x="30" y="18" width="40" height="56" rx="6" fill="#FFD23F"/>
+          <path d="M30 74 L50 96 L70 74 Z" fill="#F7D9A8"/>
+          <path d="M43 86 L50 96 L57 86 Z" fill="#2B2D5B"/>
+          <rect x="30" y="8" width="40" height="14" rx="5" fill="#FF7A9C"/>
+        </g>
+        <circle cx="42" cy="46" r="5" fill="#2B2D5B"/><circle cx="58" cy="46" r="5" fill="#2B2D5B"/>
+        <circle cx="43.5" cy="44.5" r="1.7" fill="#fff"/><circle cx="59.5" cy="44.5" r="1.7" fill="#fff"/>
+        <path d="M41 58 Q50 67 59 58" fill="none" stroke="#2B2D5B" stroke-width="4" stroke-linecap="round"/>
+        <circle cx="36" cy="56" r="4" fill="#FF7A9C" opacity=".7"/><circle cx="64" cy="56" r="4" fill="#FF7A9C" opacity=".7"/>
+      </svg>
+      <span class="tag" id="tag">ADIÇÃO</span>
+      <h2 class="question" id="qtext"></h2>
+      <div class="visual" id="visual"></div>
+    </section>
+
+    <div class="options" id="options" role="group" aria-label="Alternativas"></div>
+    <div class="feedback" id="feedback" role="status"></div>
+    <div class="actions"><button class="next" id="next" type="button">PRÓXIMA QUESTÃO ➜</button></div>
+  </main>
+
+  <section class="card final" id="final">
+    <svg class="trophy" viewBox="0 0 140 140" aria-hidden="true">
+      <g stroke="#2B2D5B" stroke-width="5" stroke-linejoin="round" stroke-linecap="round">
+        <path d="M30 22 H110 V54 Q110 88 70 94 Q30 88 30 54 Z" fill="#FFD23F"/>
+        <path d="M30 32 H12 Q12 64 38 68" fill="none"/>
+        <path d="M110 32 H128 Q128 64 102 68" fill="none"/>
+        <rect x="60" y="94" width="20" height="18" fill="#FFB400"/>
+        <rect x="42" y="112" width="56" height="16" rx="5" fill="#8E6CEF"/>
+      </g>
+      <path d="M70 36 l6 13 14 2 -10 10 3 14 -13 -7 -13 7 3 -14 -10 -10 14 -2z" fill="#fff" stroke="#2B2D5B" stroke-width="3" stroke-linejoin="round"/>
+    </svg>
+    <h1>🏆 PARABÉNS, CAMPEÃO DA MATEMÁTICA!</h1>
+    <p>Você concluiu o desafio!</p>
+    <p>Continue aprendendo! Você é capaz de ir muito longe!</p>
+    <button class="start" id="restart" type="button">🔄 JOGAR DE NOVO</button>
+  </section>
+</div>
+
+<script>
+(function(){
+  /* ---------- Dados ---------- */
+  var ico = {
+    tri:'<svg class="ico" viewBox="0 0 50 50"><path d="M25 7 L45 43 H5 Z" fill="#FF9F1C" stroke="#2B2D5B" stroke-width="3" stroke-linejoin="round"/></svg>',
+    cir:'<svg class="ico" viewBox="0 0 50 50"><circle cx="25" cy="25" r="18" fill="#3D8BFD" stroke="#2B2D5B" stroke-width="3"/></svg>',
+    ret:'<svg class="ico" viewBox="0 0 50 50"><rect x="4" y="13" width="42" height="24" fill="#8E6CEF" stroke="#2B2D5B" stroke-width="3" stroke-linejoin="round"/></svg>',
+    qua:'<svg class="ico" viewBox="0 0 50 50"><rect x="9" y="9" width="32" height="32" fill="#1FB5AD" stroke="#2B2D5B" stroke-width="3" stroke-linejoin="round"/></svg>'
+  };
+  /* Auxiliares visuais */
+  function clock(h,m){
+    var s='<svg viewBox="0 0 200 200" width="230" height="230" role="img" aria-label="Relógio analógico"><circle cx="100" cy="100" r="94" fill="#fff" stroke="#2B2D5B" stroke-width="6"/>';
+    for(var i=1;i<=12;i++){var a=i*30*Math.PI/180;
+      s+='<text x="'+(100+72*Math.sin(a)).toFixed(1)+'" y="'+(100-72*Math.cos(a)+9).toFixed(1)+'" text-anchor="middle" font-size="26" font-weight="700" fill="#2B2D5B" font-family="Fredoka,sans-serif">'+i+'</text>';}
+    var ha=((h%12)+m/60)*30*Math.PI/180, ma=m*6*Math.PI/180;
+    s+='<line x1="100" y1="100" x2="'+(100+46*Math.sin(ha)).toFixed(1)+'" y2="'+(100-46*Math.cos(ha)).toFixed(1)+'" stroke="#EF4B4B" stroke-width="10" stroke-linecap="round"/>';
+    s+='<line x1="100" y1="100" x2="'+(100+70*Math.sin(ma)).toFixed(1)+'" y2="'+(100-70*Math.cos(ma)).toFixed(1)+'" stroke="#3D8BFD" stroke-width="6" stroke-linecap="round"/>';
+    s+='<circle cx="100" cy="100" r="7" fill="#2B2D5B"/></svg>';
+    return '<div style="text-align:center">'+s+'<div class="cap">Ponteiro <b style="color:#EF4B4B">vermelho</b> (curto) = horas. Ponteiro <b style="color:#3D8BFD">azul</b> (comprido) = minutos.</div></div>';
+  }
+  function cols(data,max){
+    var W=440,H=270,L=40,B=56,T=10,pw=W-L-10,ph=H-B-T;
+    var s='<svg viewBox="0 0 '+W+' '+H+'" class="cols" role="img" aria-label="Gráfico de colunas">';
+    for(var v=0;v<=max;v++){var y=T+ph-v/max*ph;
+      s+='<line x1="'+L+'" x2="'+(W-10)+'" y1="'+y+'" y2="'+y+'" stroke="#DAD7EE" stroke-width="2"/><text x="'+(L-8)+'" y="'+(y+5)+'" text-anchor="end" font-size="14" font-weight="600" fill="#2B2D5B">'+v+'</text>';}
+    var bw=pw/data.length;
+    data.forEach(function(d,i){var h=d[1]/max*ph,x=L+i*bw+bw*0.18,cxm=L+i*bw+bw/2;
+      s+='<rect x="'+x+'" y="'+(T+ph-h)+'" width="'+(bw*0.64)+'" height="'+h+'" rx="6" fill="'+d[2]+'" stroke="#2B2D5B" stroke-width="3"/>'+
+         '<text x="'+cxm+'" y="'+(H-28)+'" text-anchor="middle" font-size="22">'+d[3]+'</text>'+
+         '<text x="'+cxm+'" y="'+(H-6)+'" text-anchor="middle" font-size="15" font-weight="600" fill="#2B2D5B">'+d[0]+'</text>';});
+    return s+'</svg>';
+  }
+  function table(h1,h2,rows){
+    var s='<table class="tbl"><tr><th>'+h1+'</th><th>'+h2+'</th></tr>';
+    rows.forEach(function(r){s+='<tr><td>'+r[0]+'</td><td>'+r[1]+'</td></tr>'});
+    return s+'</table>';
+  }
+  function note(v,c){return '<span class="note" style="background:'+c+'">R$ '+v+'</span>'}
+  function ch(t){return '<span class="chip">'+t+'</span>'}
+  function eq(a,op,b){return '<span class="bignum">'+a+'</span><span class="bignum eq">'+op+'</span><span class="bignum">'+b+'</span><span class="bignum eq">=</span><span class="chip blank">?</span>'}
+  var Q = [
+    {tag:'ADIÇÃO', text:'Maria tinha 23 figurinhas e ganhou mais 15 de sua amiga. Quantas figurinhas Maria tem agora?',
+     visual:'<span class="bignum">23</span><span class="bignum eq">+</span><span class="bignum">15</span><span class="bignum eq">=</span><span class="chip blank">?</span><span style="font-size:48px">🃏⭐🎴</span>',
+     opts:['28','38','35','40'], ok:1},
+    {tag:'SUBTRAÇÃO', text:'Pedro tinha 45 carrinhos. Ele deu 12 carrinhos para seu primo. Quantos carrinhos sobraram?',
+     visual:'<span class="bignum">45</span><span class="bignum eq">−</span><span class="bignum">12</span><span class="bignum eq">=</span><span class="chip blank">?</span><span style="font-size:48px">🚗🚙🚕</span>',
+     opts:['33','32','37','30'], ok:0},
+    {tag:'SEQUÊNCIA NUMÉRICA', text:'Observe a sequência. Qual número completa a sequência?',
+     visual:'<span class="chip">10</span><span class="arrow">➜</span><span class="chip">20</span><span class="arrow">➜</span><span class="chip">30</span><span class="arrow">➜</span><span class="chip">40</span><span class="arrow">➜</span><span class="chip blank">?</span>',
+     opts:['45','60','50','55'], ok:2},
+    {tag:'GRÁFICO', text:'Uma turma fez uma votação para escolher a fruta preferida. Qual fruta recebeu mais votos?',
+     visual:'<div class="chart" role="img" aria-label="Maçã 8 votos, Banana 5 votos, Uva 10 votos">'+
+       '<div class="bar"><span>🍎 Maçã</span><div class="b" style="width:80%;background:#EF4B4B">8 votos</div></div>'+
+       '<div class="bar"><span>🍌 Banana</span><div class="b" style="width:50%;background:#E5A400">5 votos</div></div>'+
+       '<div class="bar"><span>🍇 Uva</span><div class="b" style="width:100%;background:#8E6CEF">10 votos</div></div></div>',
+     opts:['Banana','Maçã','Uva','Todas receberam a mesma quantidade.'], ok:2},
+    {tag:'GEOMETRIA', text:'Qual figura geométrica possui 4 lados iguais?',
+     visual:'<span style="font-size:56px">📐✏️📏</span>',
+     opts:['Triângulo','Círculo','Retângulo','Quadrado'], ok:3, icons:[ico.tri,ico.cir,ico.ret,ico.qua]},
+
+    /* ===== Questões 6 a 30: eixos do SABE 2º ano (Números e Operações, Geometria, Grandezas e Medidas, Estatística) ===== */
+    {tag:'NÚMEROS', text:'Qual número está escrito por extenso?',
+     visual:'<span class="chip">quarenta e oito</span>',
+     opts:['84','408','48','40'], ok:2},
+    {tag:'GEOMETRIA – SÓLIDOS', text:'Qual sólido geométrico tem o formato de uma bola de futebol?',
+     visual:'<span style="font-size:80px">⚽</span>',
+     opts:['Esfera','Cubo','Cilindro','Pirâmide'], ok:0},
+    {tag:'MEDIDAS – INSTRUMENTOS', text:'Qual instrumento usamos para medir a massa (o peso) de uma melancia?',
+     visual:'<span style="font-size:72px">🍉</span>',
+     opts:['Régua','Relógio','Termômetro','Balança'], ok:3},
+    {tag:'TABELA', text:'Veja a tabela dos bichinhos de estimação da turma. Quantas crianças têm um gato?',
+     visual:table('Bichinho','Crianças',[['🐶 Cachorro','9'],['🐱 Gato','6'],['🐦 Pássaro','4'],['🐠 Peixe','7']]),
+     opts:['9','7','4','6'], ok:3},
+    {tag:'NÚMEROS – COMPARAR', text:'Qual é o MAIOR número?',
+     visual:'<span style="font-size:64px">🔢</span>',
+     opts:['47','74','38','65'], ok:1},
+    {tag:'GEOMETRIA – LOCALIZAÇÃO', text:'Na fila, o que está ENTRE o gato e o cachorro?',
+     visual:'<span style="font-size:72px">🐱</span><span style="font-size:72px">⚽</span><span style="font-size:72px">🐶</span>',
+     opts:['A bola','O gato','A flor','O osso'], ok:0},
+    {tag:'MEDIDAS – HORAS', text:'Que horas o relógio marca?',
+     visual:clock(3,0),
+     opts:['4 horas','2 horas','12 horas','3 horas'], ok:3},
+    {tag:'ADIÇÃO', text:'Léo tinha 48 bolinhas de gude e ganhou mais 7. Com quantas bolinhas ele ficou?',
+     visual:eq(48,'+',7)+'<span style="font-size:44px">🔵🔵</span>',
+     opts:['54','56','55','45'], ok:2},
+    {tag:'MEDIDAS – COMPRIMENTO', text:'Qual lápis é o mais COMPRIDO?',
+     visual:'<div class="pens"><div class="pen" style="width:45%;background:#EF4B4B"></div><div class="pen" style="width:90%;background:#3D8BFD"></div><div class="pen" style="width:65%;background:#22B573"></div><div class="pen" style="width:30%;background:#FFC21F"></div></div>',
+     opts:['Vermelho','Azul','Verde','Amarelo'], ok:1},
+    {tag:'VALOR DO ALGARISMO', text:'No número 52, qual algarismo está na casa das DEZENAS?',
+     visual:'<span class="chip">52</span>',
+     opts:['2','5','7','50'], ok:1},
+    {tag:'GEOMETRIA – SÓLIDOS', text:'Qual sólido geométrico lembra um chapéu de festa de aniversário?',
+     visual:'<span style="font-size:80px">🥳</span>',
+     opts:['Cone','Cubo','Esfera','Cilindro'], ok:0},
+    {tag:'SUBTRAÇÃO', text:'Havia 62 passarinhos em uma árvore. Depois, 18 voaram. Quantos passarinhos ficaram?',
+     visual:eq(62,'−',18)+'<span style="font-size:44px">🐦🐦</span>',
+     opts:['56','54','46','44'], ok:3},
+    {tag:'GRÁFICO DE COLUNAS', text:'Observe o gráfico do esporte preferido da turma. Qual esporte teve MENOS votos?',
+     visual:cols([['Futebol',7,'#3D8BFD','⚽'],['Vôlei',4,'#FF9F1C','🏐'],['Natação',2,'#1FB5AD','🏊'],['Basquete',5,'#8E6CEF','🏀']],8),
+     opts:['Futebol','Vôlei','Natação','Basquete'], ok:2},
+    {tag:'DINHEIRO', text:'Pedro tem 2 notas de R$ 20 e 1 nota de R$ 10. Quantos reais Pedro tem?',
+     visual:note(20,'#FFC46B')+note(20,'#FFC46B')+note(10,'#FF9C9C'),
+     opts:['30','40','60','50'], ok:3},
+    {tag:'SEQUÊNCIA NUMÉRICA', text:'Observe a sequência. Qual número completa a sequência?',
+     visual:ch(90)+'<span class="arrow">➜</span>'+ch(80)+'<span class="arrow">➜</span>'+ch(70)+'<span class="arrow">➜</span>'+ch(60)+'<span class="arrow">➜</span><span class="chip blank">?</span>',
+     opts:['65','50','40','55'], ok:1},
+    {tag:'GEOMETRIA – LOCALIZAÇÃO', text:'Olhando de frente para a imagem, qual fruta está à DIREITA da banana?',
+     visual:'<span style="font-size:72px">🍎</span><span style="font-size:72px">🍌</span><span style="font-size:72px">🍇</span>',
+     opts:['Uva','Maçã','Laranja','Morango'], ok:0},
+    {tag:'MULTIPLICAÇÃO', text:'Ana tem 3 caixas. Em cada caixa há 4 lápis. Quantos lápis Ana tem ao todo?',
+     visual:'<div class="box">✏️✏️✏️✏️</div><div class="box">✏️✏️✏️✏️</div><div class="box">✏️✏️✏️✏️</div>',
+     opts:['12','7','16','9'], ok:0},
+    {tag:'DINHEIRO', text:'Uma nota de R$ 2 pode ser trocada por quantas moedas de 50 centavos?',
+     visual:note(2,'#FFB3C7')+'<span class="arrow">➜</span><span class="chip blank">?</span><span class="arrow">×</span><span class="note" style="background:#E9E3C8">50 centavos</span>',
+     opts:['2','3','5','4'], ok:3},
+    {tag:'DIVISÃO', text:'Tenho 12 balas para dividir igualmente entre 2 amigos. Quantas balas cada amigo recebe?',
+     visual:'<span style="font-size:40px">🍬🍬🍬🍬🍬🍬🍬🍬🍬🍬🍬🍬</span><span style="font-size:48px">🧒👧</span>',
+     opts:['10','6','14','4'], ok:1},
+    {tag:'GRÁFICO DE COLUNAS', text:'Observe o gráfico da brincadeira preferida. Quantas crianças preferem brincar de bola?',
+     visual:cols([['Pique',6,'#EF4B4B','🏃'],['Bola',9,'#22B573','⚽'],['Corda',3,'#FF9F1C','➰'],['Amarelinha',5,'#8E6CEF','🟦']],10),
+     opts:['6','9','5','3'], ok:1},
+    {tag:'GEOMETRIA – FIGURAS', text:'Qual figura geométrica tem exatamente 3 lados?',
+     visual:'<span style="font-size:72px">📐</span>',
+     opts:['Círculo','Quadrado','Triângulo','Retângulo'], ok:2, icons:[ico.cir,ico.qua,ico.tri,ico.ret]},
+    {tag:'MEDIDAS – HORAS', text:'Que horas o relógio marca?',
+     visual:clock(7,30),
+     opts:['7 horas e meia','6 horas e meia','7 horas','6 horas'], ok:0},
+    {tag:'DECOMPOSIÇÃO', text:'Qual conta mostra o número 253?',
+     visual:'<span class="chip">253</span>',
+     opts:['200 + 5 + 3','2 + 5 + 3','20 + 50 + 3','200 + 50 + 3'], ok:3},
+    {tag:'NÚMEROS – SUCESSOR', text:'Qual número vem logo DEPOIS do 59?',
+     visual:ch(59)+'<span class="arrow">➜</span><span class="chip blank">?</span>',
+     opts:['60','58','61','50'], ok:0},
+    {tag:'MEDIDAS – TEMPO', text:'Uma colônia de férias dura 2 semanas. Quantos dias são?',
+     visual:'<span style="font-size:72px">📅📅</span>',
+     opts:['7','14','12','20'], ok:1}
+  ];
+  var LETTERS=['A','B','C','D'];
+  var cur=0, solved=false, muted=false, stars=0;
+
+  /* ---------- Elementos ---------- */
+  var $=function(id){return document.getElementById(id)};
+  var elQ=$('qtext'),elTag=$('tag'),elVis=$('visual'),elOpts=$('options'),elFb=$('feedback'),
+      elNext=$('next'),elLabel=$('plabel'),elFill=$('fill'),elScore=$('score'),
+      stage=$('stage'),fin=$('final'),prog=$('progress');
+
+  /* ---------- Som (Web Audio, sem arquivos externos) ---------- */
+  var AC=null;
+  function ctx(){
+    try{ if(!AC){AC=new (window.AudioContext||window.webkitAudioContext)();}
+         if(AC.state==='suspended'){AC.resume();} }catch(e){AC=null}
+    return AC;
+  }
+  function tone(freq,start,dur,type,vol,slideTo){
+    var a=ctx(); if(!a||muted) return;
+    var o=a.createOscillator(), g=a.createGain();
+    o.type=type||'sine'; o.frequency.setValueAtTime(freq,a.currentTime+start);
+    if(slideTo){o.frequency.linearRampToValueAtTime(slideTo,a.currentTime+start+dur);}
+    g.gain.setValueAtTime(0.0001,a.currentTime+start);
+    g.gain.exponentialRampToValueAtTime(vol||0.25,a.currentTime+start+0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001,a.currentTime+start+dur);
+    o.connect(g); g.connect(a.destination);
+    o.start(a.currentTime+start); o.stop(a.currentTime+start+dur+0.05);
+  }
+  function soundOk(){ // bingo alegre
+    [523.25,659.25,783.99,1046.5].forEach(function(f,i){tone(f,i*0.1,0.25,'triangle',0.3)});
+    tone(1318.5,0.45,0.5,'sine',0.25);
+    tone(1046.5,0.45,0.5,'triangle',0.2);
+  }
+  function soundBad(){ // buzina de erro
+    tone(220,0,0.22,'sawtooth',0.22,180);
+    tone(160,0.24,0.38,'sawtooth',0.22,110);
+  }
+  function soundWin(){ // fanfarra
+    var n=[523.25,523.25,523.25,659.25,783.99,659.25,783.99,1046.5];
+    var t=[0,0.15,0.3,0.45,0.7,0.95,1.1,1.35];
+    n.forEach(function(f,i){tone(f,t[i],i===7?0.9:0.22,'square',0.14); tone(f/2,t[i],i===7?0.9:0.22,'triangle',0.18)});
+  }
+
+  /* ---------- Confetes (canvas) ---------- */
+  var cv=$('confetti'), cx=cv.getContext('2d'), parts=[], raf=0;
+  function size(){cv.width=window.innerWidth;cv.height=window.innerHeight}
+  size(); window.addEventListener('resize',size);
+  function confetti(colors,count){
+    var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    count=reduce?Math.floor(count/4):count;
+    for(var i=0;i<count;i++){
+      parts.push({x:Math.random()*cv.width,y:-20-Math.random()*cv.height*0.5,
+        w:8+Math.random()*10,h:10+Math.random()*14,
+        vx:(Math.random()-.5)*4,vy:2+Math.random()*5,
+        r:Math.random()*6.28,vr:(Math.random()-.5)*.3,
+        c:colors[Math.floor(Math.random()*colors.length)]});
+    }
+    if(!raf) loop();
+  }
+  function loop(){
+    cx.clearRect(0,0,cv.width,cv.height);
+    parts=parts.filter(function(p){return p.y<cv.height+30});
+    parts.forEach(function(p){
+      p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;p.vy+=0.04;
+      cx.save();cx.translate(p.x,p.y);cx.rotate(p.r);cx.fillStyle=p.c;cx.fillRect(-p.w/2,-p.h/2,p.w,p.h);cx.restore();
+    });
+    if(parts.length){raf=requestAnimationFrame(loop)}else{raf=0;cx.clearRect(0,0,cv.width,cv.height)}
+  }
+  var GREENS=['#22B573','#7BDC9B','#1B8F5A','#B8F2C9','#0F7A4B'];
+  var REDS=['#EF4B4B','#FF8A8A','#C62E2E','#FFB3B3','#A81F1F'];
+  var RAINBOW=['#EF4B4B','#FF9F1C','#FFD23F','#22B573','#3D8BFD','#8E6CEF','#FF7A9C'];
+
+  /* ---------- Marca grande X / check ---------- */
+  function flash(id){
+    var m=$(id); m.classList.remove('show'); void m.offsetWidth; m.classList.add('show');
+  }
+
+  /* ---------- Lógica do quiz ---------- */
+  function render(){
+    var q=Q[cur]; solved=false;
+    elTag.textContent=q.tag; elQ.textContent=q.text; elVis.innerHTML=q.visual;
+    elFb.textContent=''; elFb.className='feedback';
+    elNext.classList.remove('show');
+    elNext.textContent = (cur===Q.length-1) ? 'VER MEU RESULTADO 🏆' : 'PRÓXIMA QUESTÃO ➜';
+    elLabel.textContent='Questão '+(cur+1)+' de '+Q.length;
+    elFill.style.width=(cur/Q.length*100)+'%';
+    elScore.textContent='⭐ '+stars;
+    elOpts.innerHTML='';
+    q.opts.forEach(function(t,i){
+      var b=document.createElement('button');
+      b.type='button'; b.className='opt c'+i; b.dataset.i=i;
+      b.innerHTML='<span class="letter">'+LETTERS[i]+'</span>'+(q.icons?q.icons[i]:'')+'<span class="txt"></span>';
+      b.querySelector('.txt').textContent=t;
+      b.setAttribute('aria-label','Alternativa '+LETTERS[i]+': '+t);
+      b.addEventListener('click',function(){choose(i,b)});
+      elOpts.appendChild(b);
+    });
+  }
+  function choose(i,btn){
+    if(solved||btn.disabled) return;
+    ctx(); // libera o áudio no primeiro clique
+    var q=Q[cur];
+    if(i===q.ok){
+      solved=true;
+      btn.classList.add('right');
+      Array.prototype.forEach.call(elOpts.children,function(b){
+        b.disabled=true; if(b!==btn&&!b.classList.contains('wrong')){b.classList.add('dim')}
+      });
+      elFb.className='feedback good'; elFb.textContent='PARABÉNS! VOCÊ ACERTOU! 🎉';
+      stars++; elScore.textContent='⭐ '+stars;
+      elFill.style.width=((cur+1)/Q.length*100)+'%';
+      flash('markOk'); confetti(GREENS,160); soundOk();
+      elNext.classList.add('show');
+      setTimeout(function(){try{elNext.focus({preventScroll:false})}catch(e){}},50);
+    }else{
+      btn.classList.add('wrong'); btn.disabled=true;
+      btn.querySelector('.letter').textContent='✗';
+      elFb.className='feedback bad'; elFb.textContent='Ops! Tente novamente! Você consegue! 💪';
+      flash('markBad'); confetti(REDS,110); soundBad();
+    }
+  }
+  elNext.addEventListener('click',function(){
+    if(cur<Q.length-1){cur++;render();window.scrollTo({top:0,behavior:'smooth'})}
+    else{finish()}
+  });
+  function finish(){
+    stage.style.display='none'; prog.style.display='none';
+    fin.style.display='flex';
+    elFill.style.width='100%';
+    confetti(RAINBOW,260); soundWin();
+    var n=0, iv=setInterval(function(){confetti(RAINBOW,120); if(++n>=3)clearInterval(iv)},900);
+    window.scrollTo({top:0});
+  }
+  $('restart').addEventListener('click',function(){
+    cur=0;stars=0;fin.style.display='none';stage.style.display='flex';prog.style.display='flex';render();
+  });
+  $('mute').addEventListener('click',function(){
+    muted=!muted; this.textContent=muted?'🔇':'🔊'; if(!muted){ctx();tone(660,0,0.12,'triangle',0.2)}
+  });
+  prog.style.display='flex';
+  render();
+})();
+</script>
+</body>
+</html>
